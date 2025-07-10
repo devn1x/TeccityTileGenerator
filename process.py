@@ -6,6 +6,7 @@ config_heading = sys.argv[1] # One of "ne", "nw", "se", "sw"
 config_path_source = "../TeccityImages/output-{heading}.png"
 config_path_output = "../TeccityImages/tiles-{heading}/{z}/{x}/{y}.png"
 config_zoom_max = 6
+config_tile_size = 256
 
 def prepare_map_image() -> Image.Image:
     # Crop image to it's maximum square
@@ -30,7 +31,11 @@ def generate_tile(x, y, z):
     box = (left, top, right, bottom)
     tile = img.crop(box)
 
-    tile.thumbnail((512,512), Image.Resampling.NEAREST)
+    if tile.size[0] > config_tile_size:
+        tile.thumbnail((config_tile_size,config_tile_size), resample=Image.Resampling.NEAREST)
+    else:
+        tile = tile.resize((config_tile_size, config_tile_size), resample=Image.Resampling.NEAREST)
+    
     tile.save(path)
 
 img = prepare_map_image()
